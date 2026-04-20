@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data'; // Added this for Uint8List
-import 'package:enhancia/screens/home/layouts/mobile_home_screen.dart';
 import 'package:enhancia/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:before_after/before_after.dart';
-import '../../../utils/downlaod_function.dart';
+import '../../routes/named_routes.dart';
+import '../../utils/downlaod_function.dart';
 
 class MobileResultScreen extends StatefulWidget {
   final File originalImage;
@@ -110,11 +110,9 @@ class _MobileResultScreenState extends State<MobileResultScreen> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(
+                        Navigator.pushNamedAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const MobileHomeScreen(),
-                          ),
+                           AppRoutes.home,
                               (route) => false,
                         );
                       },

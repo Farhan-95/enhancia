@@ -1,4 +1,4 @@
-import 'package:enhancia/screens/home/home_screen.dart';
+import 'package:enhancia/routes/named_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,9 +13,8 @@ class MobileWelcomeScreen extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isFirstTime', false);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    Navigator.pushReplacementNamed(
+      context, AppRoutes.home
     );
   }
 

@@ -1,5 +1,4 @@
-import 'package:enhancia/screens/home/home_screen.dart';
-import 'package:enhancia/screens/welcome/welcome_screen.dart';
+import 'package:enhancia/routes/named_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,15 +23,11 @@ class _SplashscreenState extends State<Splashscreen> {
     final prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime')??true;
      if(isFirstTime){
-       Navigator.pushReplacement(
-         context,
-         MaterialPageRoute(builder: (context) => WelcomeScreen()),
-       );
+       Navigator.pushReplacementNamed(context, AppRoutes.welcome);
      }
      else{
-       Navigator.pushReplacement(
-         context,
-         MaterialPageRoute(builder: (context) => HomeScreen()),
+       Navigator.pushReplacementNamed(
+         context,AppRoutes.home
        );
      }
   }

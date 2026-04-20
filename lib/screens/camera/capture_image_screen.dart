@@ -1,10 +1,10 @@
-import 'package:enhancia/screens/result/layouts/mobile_result_screen.dart';
 import 'package:enhancia/services/api%20service/api_service.dart';
 import 'package:enhancia/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 
+import '../../routes/named_routes.dart';
 import '../../widgets/custom_loader_widget.dart';
 
 class CaptureImageScreen extends StatefulWidget {
@@ -43,14 +43,10 @@ class _CaptureImageScreenState extends State<CaptureImageScreen> {
 
       if (enhancedFile != null) {
         // 4. NAVIGATE TO RESULT
-        navigator.pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => MobileResultScreen(
-              originalImage: file,
-              enhancedImage: enhancedFile,
-            ),
-          ),
-        );
+        Navigator.pushReplacementNamed(context, AppRoutes.result,arguments: {
+          'original': file,
+          'enhanced': enhancedFile,
+        },);
       } else {
         messenger.showSnackBar(
           const SnackBar(content: Text("Enhancement failed. Please try again.")),

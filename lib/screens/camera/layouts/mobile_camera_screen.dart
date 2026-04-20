@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:provider/provider.dart';
 import 'package:enhancia/provider/theme_provider.dart';
-import 'package:enhancia/screens/camera/capture_image_screen.dart';
 import 'package:enhancia/widgets/custom_capture_button.dart';
 import 'package:enhancia/widgets/custom_chip.dart';
+import '../../../routes/named_routes.dart';
 import '../../../services/camera_service/camera_service.dart';
 
 class MobileCameraScreen extends StatefulWidget {
@@ -58,11 +58,10 @@ class _MobileCameraScreenState extends State<MobileCameraScreen> {
     try {
       XFile file = await _cameraService.controller!.takePicture();
       if (!mounted) return;
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => CaptureImageScreen(imagePath: file.path),
-        ),
+        AppRoutes.capturePreview,
+        arguments: file.path,
       );
     } catch (e) {
       debugPrint("Error capturing: $e");
