@@ -35,7 +35,7 @@ class AppRoutes {
       case setting:
         return MaterialPageRoute(builder: (_) => const Settings());
       case result:
-        final args = settings.arguments as Map<String, File>;
+        final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => MobileResultScreen(
             originalImage: args['original']!,

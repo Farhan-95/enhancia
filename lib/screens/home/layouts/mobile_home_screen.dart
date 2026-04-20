@@ -115,8 +115,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                   if (navigator.canPop()) navigator.pop(); // Close loader
 
                   if (enhancedFile != null) {
-                    Navigator.pushNamed(
-                      context,
+                    navigator.pushNamed(
                       AppRoutes.result,
                       arguments: {'original': file, 'enhanced': enhancedFile},
                     );
@@ -132,8 +131,8 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                 } catch (e) {
                   if (navigator.canPop()) navigator.pop();
                   messenger.showSnackBar(
-                    const SnackBar(
-                      content: Text("An error occurred."),
+                    SnackBar(
+                      content: Text("An Error Occurred"),
                       behavior: SnackBarBehavior.floating,
                       backgroundColor: Colors.grey,
                     ),
