@@ -13,6 +13,8 @@
 <!-- 💾 Save Images to Gallery -->
 <key>NSPhotoLibraryAddUsageDescription</key>
 <string>This app saves enhanced images to your gallery</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Enhancia AI needs access to your gallery to save enhanced photos.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

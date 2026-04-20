@@ -1,37 +1,58 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
+import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class ApiService {
-  static const String baseUrl = "http://192.168.1.16:5051"; // your backend IP
+  static const String baseUrl = "https://hippest-genia-sneerful.ngrok-free.dev";
+  static http.Client? _activeClient;
+
+  // ✅ PLACE IT HERE: This fixes the 'Member not found' error
+  static void cancelRequest() {
+    _activeClient?.close();
+    _activeClient = null;
+    print("🚫 Request manually cancelled.");
+  }
 
   static Future<File?> enhanceImage(File imageFile) async {
+    _activeClient = http.Client();
     try {
       var uri = Uri.parse("$baseUrl/enhance");
       var request = http.MultipartRequest('POST', uri);
+
+      request.headers.addAll({
+        "ngrok-skip-browser-warning": "69420",
+        "Accept": "image/jpeg",
+      });
+
       request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
 
-      var response = await request.send();
+      // Increase timeout slightly for very high-res images
+      var streamedResponse = await _activeClient!.send(request).timeout(const Duration(minutes: 12));
 
-      if (response.statusCode == 200) {
-        // get bytes
-        Uint8List bytes = await response.stream.toBytes();
+      print("📡 Response Code: ${streamedResponse.statusCode}");
 
-        // save bytes to temp file
+      if (streamedResponse.statusCode == 200) {
         final tempDir = await getTemporaryDirectory();
-        final tempFile = File('${tempDir.path}/enhanced_${basename(imageFile.path)}');
-        await tempFile.writeAsBytes(bytes);
+        final fileName = 'enhanced_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final tempFile = File('${tempDir.path}/$fileName');
 
-        return tempFile; // now a File, not Uint8List
-      } else {
-        print("Failed to enhance image: ${response.statusCode}");
-        return null;
+        final IOSink sink = tempFile.openWrite();
+
+        // This pipes the data directly to the storage
+        await streamedResponse.stream.pipe(sink);
+        await sink.close();
+
+        // Safety check: ensure file isn't empty
+        if (await tempFile.length() > 0) {
+          return tempFile;
+        }
       }
-    } catch (e) {
-      print("Error in enhanceImage: $e");
       return null;
+    } catch (e) {
+      print("⚠️ API Error: $e");
+      return null;
+    } finally {
+      _activeClient = null;
     }
   }
 }

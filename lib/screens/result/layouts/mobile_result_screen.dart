@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data'; // Added this for Uint8List
 import 'package:enhancia/screens/home/layouts/mobile_home_screen.dart';
 import 'package:enhancia/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:before_after/before_after.dart';
-import 'package:enhancia/widgets/custom_chip.dart';
+import '../../../utils/downlaod_function.dart';
 
 class MobileResultScreen extends StatefulWidget {
   final File originalImage;
@@ -22,6 +23,55 @@ class MobileResultScreen extends StatefulWidget {
 
 class _MobileResultScreenState extends State<MobileResultScreen> {
   double slideValue = 0.5;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(FileImage(widget.originalImage), context);
+    precacheImage(FileImage(widget.enhancedImage), context);
+  }
+
+  void showDownloadConfirmation(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Download'),
+          content: const Text('Do you want to save this enhanced image to your gallery?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('No', style: TextStyle(color: Colors.red)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context); // Close dialog
+
+                // ✅ CORRECT WAY: Read bytes from the file first
+                Uint8List imageBytes = await widget.enhancedImage.readAsBytes();
+
+                // Call your utility function
+                saveEnhancedImage(context, imageBytes);
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Your original buildChip function
+  Widget buildChip(Widget label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: label,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +108,6 @@ class _MobileResultScreenState extends State<MobileResultScreen> {
                       style: TextStyle(color: Colors.black),
                     ),
                     const SizedBox(height: 10),
-
-                    // Exit Button
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
@@ -79,13 +127,11 @@ class _MobileResultScreenState extends State<MobileResultScreen> {
                       ),
                       child: const Text('Yes, Exit'),
                     ),
-
                     const SizedBox(height: 10),
-
-                    // Save Button
                     OutlinedButton(
                       onPressed: () {
-                        // TODO: Save image to gallery
+                        Navigator.pop(context); // Close "Are you sure" dialog
+                        showDownloadConfirmation(context); // Open download dialog
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: const Size(230, 50),
@@ -109,7 +155,7 @@ class _MobileResultScreenState extends State<MobileResultScreen> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              // TODO: Download functionality
+              showDownloadConfirmation(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -121,69 +167,36 @@ class _MobileResultScreenState extends State<MobileResultScreen> {
           ),
         ],
       ),
-
       body: Column(
         children: [
           const SizedBox(height: 7),
-
           Expanded(
             child: Stack(
               children: [
-                // 🔥 Before/After Comparison
                 BeforeAfter(
                   value: slideValue,
                   onValueChanged: (val) => setState(() => slideValue = val),
                   width: double.infinity,
                   height: double.infinity,
                   direction: SliderDirection.horizontal,
-
-                  // ✅ BEFORE IMAGE
-                  before: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image.file(
-                      widget.originalImage,
-                      fit: BoxFit.cover,
-                    ),
+                  before: Image.file(
+                    widget.originalImage,
+                    fit: BoxFit.cover,
                   ),
-
-                  // ✅ AFTER IMAGE
-                  after: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image.file(
-                      widget.enhancedImage,
-                      fit: BoxFit.cover,
-                    ),
+                  after: Image.file(
+                    widget.enhancedImage,
+                    fit: BoxFit.cover,
                   ),
                 ),
-
-                // BEFORE Label
                 Positioned(
                   top: 20,
                   left: 20,
-                  child: buildChip(
-                    Text(
-                      'Before',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  child: buildChip(Text('After', style: GoogleFonts.poppins(color: Colors.white))),
                 ),
-
-                // AFTER Label
                 Positioned(
                   top: 20,
                   right: 20,
-                  child: buildChip(
-                    Text(
-                      'After',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  child: buildChip(Text('Before', style: GoogleFonts.poppins(color: Colors.white))),
                 ),
               ],
             ),
