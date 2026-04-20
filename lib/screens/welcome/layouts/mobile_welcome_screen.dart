@@ -12,7 +12,7 @@ class MobileWelcomeScreen extends StatelessWidget {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isFirstTime', false);
-
+    if (!context.mounted) return;
     Navigator.pushReplacementNamed(
       context, AppRoutes.home
     );

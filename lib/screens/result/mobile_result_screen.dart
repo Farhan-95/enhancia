@@ -46,11 +46,9 @@ class _MobileResultScreenState extends State<MobileResultScreen> {
             ElevatedButton(
               onPressed: () async {
                 Navigator.pop(context); // Close dialog
-
-                // ✅ CORRECT WAY: Read bytes from the file first
+                if (!mounted) return;
                 Uint8List imageBytes = await widget.enhancedImage.readAsBytes();
-
-                // Call your utility function
+                if (!context.mounted) return;
                 saveEnhancedImage(context, imageBytes);
               },
               child: const Text('Yes'),

@@ -6,7 +6,6 @@ import '../screens/home/home_screen.dart';
 import '../screens/camera/camera_screen.dart';
 import '../screens/result/mobile_result_screen.dart';
 import '../screens/home/settings.dart';
-import 'dart:io';
 
 class AppRoutes {
   static const String splash = '/';

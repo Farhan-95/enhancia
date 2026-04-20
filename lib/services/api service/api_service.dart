@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -10,7 +11,9 @@ class ApiService {
   static void cancelRequest() {
     _activeClient?.close();
     _activeClient = null;
-    print("🚫 Request manually cancelled.");
+    if (kDebugMode) {
+      print("🚫 Request manually cancelled.");
+    }
   }
 
   static Future<File?> enhanceImage(File imageFile) async {
@@ -29,7 +32,9 @@ class ApiService {
       // Increase timeout slightly for very high-res images
       var streamedResponse = await _activeClient!.send(request).timeout(const Duration(minutes: 12));
 
-      print("📡 Response Code: ${streamedResponse.statusCode}");
+      if (kDebugMode) {
+        print("📡 Response Code: ${streamedResponse.statusCode}");
+      }
 
       if (streamedResponse.statusCode == 200) {
         final tempDir = await getTemporaryDirectory();
@@ -49,7 +54,9 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      print("⚠️ API Error: $e");
+      if (kDebugMode) {
+        print("⚠️ API Error: $e");
+      }
       return null;
     } finally {
       _activeClient = null;

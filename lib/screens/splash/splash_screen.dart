@@ -23,9 +23,11 @@ class _SplashscreenState extends State<Splashscreen> {
     final prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime')??true;
      if(isFirstTime){
+       if (!mounted) return;
        Navigator.pushReplacementNamed(context, AppRoutes.welcome);
      }
      else{
+       if (!mounted) return;
        Navigator.pushReplacementNamed(
          context,AppRoutes.home
        );

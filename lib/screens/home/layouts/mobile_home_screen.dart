@@ -34,6 +34,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     if (status.isGranted) {
       hasPermission = true;
       _isCheckingPermission = false;
+      if (!mounted) return;
       await context.read<GalleryProvider>().loadImages();
     } else {
       hasPermission = false;
@@ -44,10 +45,12 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
 
   void _checkCameraPermission() async {
     final status = await Permission.camera.status;
+    if (!mounted) return;
     if (status.isGranted) {
       await Navigator.pushNamed(context, AppRoutes.camera);
     } else {
       final request = await Permission.camera.request();
+      if (!mounted) return;
       if (request.isGranted) {
         Navigator.pushNamed(context, AppRoutes.camera);
       }
@@ -58,6 +61,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     final status = await Permission.photos.request();
     if (status.isGranted) {
       hasPermission = true;
+      if (!mounted) return;
       await context.read<GalleryProvider>().loadImages();
     }
     if (mounted) setState(() {});

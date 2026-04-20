@@ -22,6 +22,7 @@ Future<void> saveEnhancedImage(
     await Gal.putImage(path, album: 'Enhancia AI');
 
     // 4. Show success message
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
