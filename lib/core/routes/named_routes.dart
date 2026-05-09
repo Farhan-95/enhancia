@@ -1,11 +1,12 @@
 import 'package:enhancia/screens/splash/splash_screen.dart';
 import 'package:enhancia/screens/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
-import '../screens/camera/capture_image_screen.dart';
-import '../screens/home/home_screen.dart';
-import '../screens/camera/camera_screen.dart';
-import '../screens/result/mobile_result_screen.dart';
-import '../screens/home/settings.dart';
+
+import '../../screens/camera/camera_screen.dart';
+import '../../screens/camera/capture_image_screen.dart';
+import '../../screens/home/home_screen.dart';
+import '../../screens/home/settings.dart';
+import '../../screens/result/mobile_result_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -19,7 +20,7 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
-        return MaterialPageRoute(builder: (_) => const Splashscreen());
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case welcome:
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case home:

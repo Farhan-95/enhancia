@@ -1,7 +1,9 @@
-import 'package:enhancia/services/api%20service/api_service.dart';
 import 'package:flutter/material.dart';
-import 'dart:async'; // Required for Timer
+import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/enhance_provider.dart';
 
 class NonDismissibleApiLoader extends StatefulWidget {
   const NonDismissibleApiLoader({super.key});
@@ -11,37 +13,31 @@ class NonDismissibleApiLoader extends StatefulWidget {
 }
 
 class _NonDismissibleApiLoaderState extends State<NonDismissibleApiLoader> {
-  // Timer and current text management
   Timer? _statusTimer;
   int _currentTextIndex = 0;
 
-  // The sequential messages for the FYP pipeline
   final List<String> _statusTexts = [
-    "Image is upscaling...",      // Step 1: Real-ESRGAN
-    "Restoring the face...",       // Step 2: GFPGAN
-    "Upgrading image quality...",  // Step 3: Sharpness & Color
+    "Image is upscaling...",
+    "Restoring the face...",
+    "Upgrading image quality...",
   ];
 
   @override
   void initState() {
     super.initState();
-    // Start the automatic text switcher when the widget appears
     _startTextRotation();
   }
 
   @override
   void dispose() {
-    // Crucial: Stop the timer if the widget is removed
     _statusTimer?.cancel();
     super.dispose();
   }
 
-  // The logic that changes the text every 10 seconds
   void _startTextRotation() {
     _statusTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (mounted) {
         setState(() {
-          // Increment the index, but restart from 0 if we hit the end
           _currentTextIndex = (_currentTextIndex + 1) % _statusTexts.length;
         });
       }
@@ -50,13 +46,21 @@ class _NonDismissibleApiLoaderState extends State<NonDismissibleApiLoader> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the viewmodel to handle cancellation
+    final viewModel = context.read<EnhanceProvider>();
+
     return Scaffold(
+      backgroundColor: Colors.black, // Ensure background is dark for premium look
       body: PopScope(
-        // Prevent accidental closing with the physical Back button
         canPop: false,
-        onPopInvoked: (didPop) {
-          if (didPop) return; // Already going back, ignore
-          ApiService.cancelRequest(); // NEW: Still cancel if they spam back button
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+
+          // logic: Tell ViewModel to cancel, which tells Repo, which tells API
+          viewModel.cancelEnhancement();
+
+          // Close the dialog manually since canPop is false
+          Navigator.of(context).pop();
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -64,15 +68,13 @@ class _NonDismissibleApiLoaderState extends State<NonDismissibleApiLoader> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 1. YOUR CUSTOM LOGO (ASSET)
               Center(
                 child: Container(
-                  height: 200, // Adjust size as needed
+                  height: 200,
                   width: 200,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      // Ensure the file exists in this path
                       image: AssetImage('assets/icons/enhancia_loading.png'),
                       fit: BoxFit.contain,
                     ),
@@ -81,13 +83,15 @@ class _NonDismissibleApiLoaderState extends State<NonDismissibleApiLoader> {
               ),
               const SizedBox(height: 30),
 
-              // 2. NATIVE SPINNER (Re-adding it so they know it's working)
-              // const CircularProgressIndicator(color: Colors.red),
-              // const SizedBox(height: 30),
+              // Added a linear progress indicator for better UX
+              const LinearProgressIndicator(
+                color: Colors.white,
+                backgroundColor: Colors.white24,
+              ),
+              const SizedBox(height: 20),
 
-              // 3. THE CONTEXT-AWARE TEXT (DYNAMIC)
               Text(
-                _statusTexts[_currentTextIndex], // Display current message
+                _statusTexts[_currentTextIndex],
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
@@ -97,7 +101,6 @@ class _NonDismissibleApiLoaderState extends State<NonDismissibleApiLoader> {
               ),
               const SizedBox(height: 10),
 
-              // 4. SUBTEXT (To reassure the user)
               Text(
                 "Final Year Project Pipeline. Please wait.",
                 textAlign: TextAlign.center,

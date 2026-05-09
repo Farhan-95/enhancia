@@ -1,9 +1,11 @@
+import 'package:enhancia/provider/enhance_provider.dart';
 import 'package:enhancia/provider/gallery_provider.dart';
 import 'package:enhancia/provider/theme_provider.dart';
-import 'package:enhancia/routes/named_routes.dart';
-import 'package:enhancia/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'core/routes/named_routes.dart';
+import 'core/utils/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,8 +14,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => GalleryProvider()),
+        ChangeNotifierProvider(create: (_) => EnhanceProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }

@@ -4,8 +4,9 @@ import 'package:enhancia/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:before_after/before_after.dart';
-import '../../routes/named_routes.dart';
-import '../../utils/downlaod_function.dart';
+
+import '../../core/routes/named_routes.dart';
+import '../../core/utils/downlaod_function.dart';
 
 class MobileResultScreen extends StatefulWidget {
   final File originalImage;

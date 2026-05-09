@@ -4,9 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/utils/app_color_picker.dart';
+import '../../core/utils/url_launcher_helper.dart';
 import '../../provider/theme_provider.dart';
-import '../../utils/app_color_picker.dart';
-import '../../utils/url_launcher_helper.dart';
 
 class Settings extends StatelessWidget {
   const Settings({super.key});

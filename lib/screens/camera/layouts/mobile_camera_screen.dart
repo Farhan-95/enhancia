@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:enhancia/provider/theme_provider.dart';
 import 'package:enhancia/widgets/custom_capture_button.dart';
 import 'package:enhancia/widgets/custom_chip.dart';
-import '../../../routes/named_routes.dart';
-import '../../../services/camera_service/camera_service.dart';
+import '../../../core/routes/named_routes.dart';
+import '../../../data/services/camera_service/camera_service.dart';
 
 class MobileCameraScreen extends StatefulWidget {
   const MobileCameraScreen({super.key});

@@ -1,7 +1,8 @@
-import 'package:enhancia/routes/named_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../core/routes/named_routes.dart';
 
 class MobileWelcomeScreen extends StatelessWidget {
   const MobileWelcomeScreen({super.key});

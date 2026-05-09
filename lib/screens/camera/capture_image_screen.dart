@@ -1,10 +1,11 @@
-import 'package:enhancia/services/api%20service/api_service.dart';
 import 'package:enhancia/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart'; // Add Provider
 import 'dart:io';
 
-import '../../routes/named_routes.dart';
+import '../../core/routes/named_routes.dart';
+import '../../provider/enhance_provider.dart';
 import '../../widgets/custom_loader_widget.dart';
 
 class CaptureImageScreen extends StatefulWidget {
@@ -19,43 +20,47 @@ class CaptureImageScreen extends StatefulWidget {
 class _CaptureImageScreenState extends State<CaptureImageScreen> {
 
   Future<void> _enhanceCapturedImage() async {
+    final viewModel = context.read<EnhanceProvider>();
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
-    // 1. SHOW CUSTOM LOADING SCREEN
+    // 1. Show the Loader
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black, // Makes it look premium
+      barrierColor: Colors.black,
       builder: (context) => const NonDismissibleApiLoader(),
     );
 
-    try {
-      File file = File(widget.imagePath);
+    // 2. Prepare the File
+    File file = File(widget.imagePath);
 
-      // 2. CALL API
-      final enhancedFile = await ApiService.enhanceImage(file);
+    // 3. Call ViewModel (This triggers Repository -> API Service)
+    await viewModel.processImage(file);
 
-      if (!mounted) return;
+    if (!mounted) return;
 
-      // 3. CLOSE LOADING SCREEN
-      if (navigator.canPop()) navigator.pop();
+    // 4. Close the Loader
+    if (navigator.canPop()) navigator.pop();
 
-      if (enhancedFile != null) {
-        // 4. NAVIGATE TO RESULT
-        Navigator.pushReplacementNamed(context, AppRoutes.result,arguments: {
+    // 5. Handle the result based on ViewModel State
+    if (viewModel.status == EnhanceStatus.success) {
+      // Navigate to Result Screen
+      navigator.pushReplacementNamed(
+        AppRoutes.result,
+        arguments: {
           'original': file,
-          'enhanced': enhancedFile,
-        },);
-      } else {
-        messenger.showSnackBar(
-          const SnackBar(content: Text("Enhancement failed. Please try again.")),
-        );
-      }
-    } catch (e) {
-      if (navigator.canPop()) navigator.pop();
+          'enhanced': viewModel.enhancedFile,
+        },
+      );
+    } else {
+      // Show Error from ViewModel
       messenger.showSnackBar(
-        SnackBar(content: Text("Error: ${e.toString()}")),
+        SnackBar(
+          content: Text(viewModel.errorMessage),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
